@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    container_name: fastapi-jira-time-tracker
+    ports:
+      - "7005:7005"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
+    networks:
+      - fastapi_network
+networks:
+  fastapi_network:
+    driver: bridge
