@@ -7,6 +7,7 @@ from pydantic import BaseModel
 import requests
 import datetime
 from requests.auth import HTTPBasicAuth
+from collections import defaultdict
 
 app = FastAPI()
 
@@ -57,11 +58,10 @@ def format_time(minutes: float) -> str:
 # Function to fetch time logs from Jira
 def get_time_logged(start_date, end_date):
     JQL_QUERY = f'worklogAuthor="{TARGET_USER}" AND worklogDate >= "{start_date}" AND worklogDate <= "{end_date}"'
-
     headers = {"Accept": "application/json"}
     auth = HTTPBasicAuth(USER_EMAIL, API_TOKEN)
 
-    url = f"{JIRA_URL}/rest/api/3/search?jql={JQL_QUERY}&fields=worklog"
+    url = f"{JIRA_URL}/rest/api/3/search?jql={JQL_QUERY}&fields=worklog"    
     response = requests.get(url, headers=headers, auth=auth)
 
     if response.status_code != 200:
@@ -69,7 +69,9 @@ def get_time_logged(start_date, end_date):
 
     issues = response.json().get("issues", [])
     total_seconds = 0
-    worklog_details = []
+    #worklog_details = []
+
+    grouped_issues = defaultdict(lambda: {"time": 0, "logs": []})
 
     for issue in issues:
         issue_key = issue["key"]
@@ -79,15 +81,42 @@ def get_time_logged(start_date, end_date):
             if worklog["author"]["emailAddress"] == TARGET_USER:
                 started = worklog["started"][:10]  # Extract YYYY-MM-DD
                 log_date = datetime.datetime.strptime(started, "%Y-%m-%d").date()
+                
                 if start_date <= log_date <= end_date:
                     time_spent = worklog["timeSpentSeconds"]
+                    formatted_time = f"{time_spent // 3600}:{time_spent % 3600 // 60:02}"
                     total_seconds += time_spent
-                    worklog_details.append({"issue": issue_key, "time": format_time(time_spent / 60)})
 
-    total_minutes = total_seconds / 60
-    formatted_total_time = format_time(total_minutes)
+                    #worklog_details.append({"issue": issue_key, "time": formatted_time})
+                    # Add to the issue's total time
+                    grouped_issues[issue_key]["time"] += time_spent
 
-    return {"total_time": formatted_total_time, "worklogs": worklog_details}
+                    # Append individual worklog entry
+                    grouped_issues[issue_key]["logs"].append({
+                        "issue_log": issue_key,
+                        "time_log": formatted_time
+                    })
+
+    #total_minutes = total_seconds / 60
+    #formatted_total_time = format_time(total_minutes)
+
+    # Convert total time to HH:MM format
+    final_result = {
+        "total_time": format_time(sum(issue["time"] for issue in grouped_issues.values()) / 60),
+        "worklogs": []
+    }
+
+    for issue_key, data in grouped_issues.items():
+        total_time_str = format_time(data["time"] / 60)  # Convert total seconds to HH:MM
+        final_result["worklogs"].append({
+            "issue": issue_key,
+            "time": total_time_str,
+            "logs": data["logs"]
+        })
+
+    #return {"total_time": formatted_total_time, "worklogs": worklog_details}
+
+    return final_result
 
 @app.post("/get_time", response_class=HTMLResponse)
 async def get_time(
@@ -99,6 +128,7 @@ async def get_time(
     try:
         start_date, end_date = get_date_range(date_range, start_date, end_date)
         result = get_time_logged(start_date, end_date)
+        print("DEBUG:", result)
     except Exception as e:
         return templates.TemplateResponse("index.html", {"request": request, "error": str(e)})
     
