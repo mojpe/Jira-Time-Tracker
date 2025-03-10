@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
     <script src="{{ url_for('static', path='/js/script.js') }}" defer></script>
     <title>Jira Time Tracker</title>
-    </script>
 </head>
 <body>
 
@@ -48,10 +47,19 @@
                         <th>Time Spent</th>
                     </tr>
                     {% for log in result.worklogs %}
-                        <tr>
-                            <td>{{ log.issue }}</td>
+                        <tr class="issue-row" data-issue="{{ log.issue }}">
+                            <td onclick="toggleDetails('{{ log.issue }}')" style="cursor: pointer;">
+                                {{ log.issue }} <span class="arrow">▶</span>
+                            </td>
                             <td>{{ log.time }}</td> <!-- Display time in hh:mm format -->
                         </tr>
+                         <!-- Hidden rows for work logs -->
+                        {% for worklog in log.logs %}
+                            <tr class="details {{ log.issue }}" style="display: none;">
+                                <td>{{ worklog.issue_log }}</td>
+                                <td>{{ worklog.time_log }}</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
                 </table>
             {% else %}

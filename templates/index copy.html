@@ -41,7 +41,7 @@
                     {% for issue, data in result.items() %}
                         <tr class="issue-row" data-issue="{{ issue }}">
                             <td onclick="toggleDetails('{{ issue }}')" style="cursor: pointer;">
-                                <span class="arrow">▶</span> {{ issue }}
+                                {{ issue }} <span class="arrow">▶</span>
                             </td>
                             <td>{{ data.total_time }}</td>
                         </tr>
