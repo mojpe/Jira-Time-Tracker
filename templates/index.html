@@ -3,64 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!--link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}"-->
     <script src="{{ url_for('static', path='/js/script.js') }}" defer></script>
     <title>Jira Time Tracker</title>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Jira Time Tracker</h1>
+    <div class="container border rounded shadow p-4 my-4">
+        <h1 class="my-4 text-center">Jira Time Tracker</h1>
 
-        <form action="/get_time" method="post">
-            <label for="date-range">Select Time Range:</label>
-            <select id="date-range" name="date_range" onchange="toggleDatePicker()">
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="this_week">This Week</option>
-                <option value="last_week">Last Week</option>
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="custom">Custom Range</option>
-            </select>
-
-            <!-- Custom Date Range Inputs -->
-            <div id="custom-date-picker" style="display: none;">
-                <label for="start_date">Start Date:</label>
-                <input type="date" id="start_date" name="start_date">
-                <label for="end_date">End Date:</label>
-                <input type="date" id="end_date" name="end_date">
+        <form action="/get_time" method="post" class="mb-4">
+            <div class="form-group">
+                <label for="date-range">Select Time Range:</label>
+                <select id="date-range" name="date_range" onchange="toggleDatePicker()" class="form-control">
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="this_week">This Week</option>
+                    <option value="last_week">Last Week</option>
+                    <option value="this_month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
             </div>
 
-            <button type="submit">Get Logged Time</button>
+            <div id="custom-date-picker" style="display: none;">
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Get Logged Time</button>
         </form>
 
         {% if result %}
-            <!-- Total Time in hh:mm format -->
-            <h2>Total Time Logged: {{ result.total_time }}</h2> <!-- Use result.total_time -->
+            <h2 class="text-center">Total Time Logged: {{ result.total_time }}</h2>
 
             {% if result.worklogs %}
                 <h3>Time Logged Per Issue:</h3>
-                <table>
-                    <tr>
-                        <th>Issue Key</th>
-                        <th>Time Spent</th>
-                    </tr>
-                    {% for log in result.worklogs %}
-                        <tr class="issue-row" data-issue="{{ log.issue }}">
-                            <td onclick="toggleDetails('{{ log.issue }}')" style="cursor: pointer;">
-                                {{ log.issue }} <span class="arrow">▶</span>
-                            </td>
-                            <td>{{ log.time }}</td> <!-- Display time in hh:mm format -->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Issue Key</th>
+                            <th>Time Spent</th>
                         </tr>
-                         <!-- Hidden rows for work logs -->
-                        {% for worklog in log.logs %}
-                            <tr class="details {{ log.issue }}" style="display: none;">
-                                <td>{{ worklog.issue_log }}</td>
-                                <td>{{ worklog.time_log }}</td>
+                    </thead>
+                    <tbody>
+                        {% for log in result.worklogs %}
+                            <tr class="issue-row" data-issue="{{ log.issue }}">
+                                <td data-toggle="collapse" data-target=".details.{{ log.issue }}" style="cursor: pointer;">
+                                    {{ log.issue }} <span class="arrow">▶</span>
+                                </td>
+                                <td>{{ log.time }}</td>
                             </tr>
+                            {% for worklog in log.logs %}
+                                <tr class="collapse details {{ log.issue }}" style="display: none;">
+                                    <td>{{ worklog.issue_log }}</td>
+                                    <td>{{ worklog.time_log }}</td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
+                    </tbody>
                 </table>
             {% else %}
                 <p>No work logs found for today.</p>
@@ -68,10 +76,11 @@
         {% endif %}
 
         {% if error %}
-            <p class="error">Error: {{ error }}</p>
+            <p class="error text-danger">Error: {{ error }}</p>
         {% endif %}
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

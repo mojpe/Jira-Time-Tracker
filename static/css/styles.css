@@ -1,12 +1,17 @@
+/* General body styles */
 body {
     font-family: Arial, sans-serif;
     margin: 40px;
     background-color: #f4f4f4;
     text-align: center;
 }
+
+/* Title styling */
 h1 {
     color: #333;
 }
+
+/* Button styles (Bootstrap handles a lot of this, but we can customize it) */
 button {
     padding: 10px 20px;
     font-size: 16px;
@@ -15,67 +20,109 @@ button {
     border: none;
     cursor: pointer;
     margin-top: 20px;
+    border-radius: 5px;
 }
+
 button:hover {
     background-color: #0056b3;
 }
+
+/* Container styles (Bootstrap's .container class provides good defaults, so we'll just add some custom styles) */
 .container {
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
+    max-width: 700px;
     margin: auto;
 }
+
+/* Error message styling */
 .error {
     color: red;
     font-weight: bold;
     margin-top: 10px;
 }
+
+/* Table styling */
 table {
     width: 100%;
-    margin-top: 15px;
     border-collapse: collapse;
-}
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-th {
-    background-color: #007bff;
-    color: white;
+    margin: 20px 0;
 }
 
-/* Style the dropdown */
-#date-range {
-    width: 200px;
-    padding: 8px;
-    font-size: 16px;
-    border: 2px solid #007bff;
-    border-radius: 5px;
-    background-color: white;
+/* Table headers and cells */
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Hover effects on table rows */
+tr:hover {
+    background-color: #f5f5f5;
     cursor: pointer;
 }
 
-/* Hover effect */
-#date-range:hover {
-    border-color: #0056b3;
+/* Arrow styling (customized to show expand/collapse arrow) */
+.expandable-arrow {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    margin-left: 10px;
+    border: solid 2px transparent;
+    border-top: 2px solid #333;
+    transition: transform 0.3s ease;
 }
 
-/* Custom date picker container */
+/* Arrow transforms when row is expanded */
+.expanded .expandable-arrow {
+    transform: rotate(180deg);
+}
+
+/* Expandable row styles */
+tr.expandable {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Expanded row background */
+tr.expanded {
+    background-color: #f9f9f9; /* Lighter background when expanded */
+}
+
+/* Collapse table rows using Bootstrap classes */
+tr.collapse {
+    display: none;
+}
+
+/* Custom date picker styling */
 #custom-date-picker {
     margin-top: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
-    display: none;
 }
 
-/* Style the date inputs */
 #custom-date-picker input {
     padding: 5px;
     margin-right: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Improved Text Color for Readability */
+td, th {
+    color: #333;
+}
+
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Optional: Adding border to rows for better separation */
+tr {
+    border-bottom: 1px solid #ddd;
 }
