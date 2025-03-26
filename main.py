@@ -69,8 +69,6 @@ def get_time_logged(start_date, end_date):
 
     issues = response.json().get("issues", [])
     total_seconds = 0
-    #worklog_details = []
-
     grouped_issues = defaultdict(lambda: {"time": 0, "logs": []})
 
     for issue in issues:
@@ -87,7 +85,6 @@ def get_time_logged(start_date, end_date):
                     formatted_time = f"{time_spent // 3600}:{time_spent % 3600 // 60:02}"
                     total_seconds += time_spent
 
-                    #worklog_details.append({"issue": issue_key, "time": formatted_time})
                     # Add to the issue's total time
                     grouped_issues[issue_key]["time"] += time_spent
 
@@ -97,27 +94,22 @@ def get_time_logged(start_date, end_date):
                         "time_log": formatted_time
                     })
 
-    #total_minutes = total_seconds / 60
-    #formatted_total_time = format_time(total_minutes)
-
-    # Convert total time to HH:MM format
     final_result = {
         "total_time": format_time(sum(issue["time"] for issue in grouped_issues.values()) / 60),
         "worklogs": []
     }
 
     for issue_key, data in grouped_issues.items():
-        total_time_str = format_time(data["time"] / 60)  # Convert total seconds to HH:MM
+        total_time_str = format_time(data["time"] / 60)
         final_result["worklogs"].append({
             "issue": issue_key,
             "time": total_time_str,
             "logs": data["logs"]
         })
 
-    #return {"total_time": formatted_total_time, "worklogs": worklog_details}
-
     return final_result
 
+@app.get("/get_time", response_class=HTMLResponse)
 @app.post("/get_time", response_class=HTMLResponse)
 async def get_time(
     request: Request,
@@ -128,7 +120,6 @@ async def get_time(
     try:
         start_date, end_date = get_date_range(date_range, start_date, end_date)
         result = get_time_logged(start_date, end_date)
-        print("DEBUG:", result)
     except Exception as e:
         return templates.TemplateResponse("index.html", {"request": request, "error": str(e)})
     

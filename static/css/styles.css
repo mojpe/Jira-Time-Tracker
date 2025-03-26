@@ -1,128 +1,17 @@
-/* General body styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    background-color: #f4f4f4;
-    text-align: center;
-}
+/** Bootstrap overrides **/
 
-/* Title styling */
-h1 {
-    color: #333;
-}
-
-/* Button styles (Bootstrap handles a lot of this, but we can customize it) */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Container styles (Bootstrap's .container class provides good defaults, so we'll just add some custom styles) */
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 700px;
-    margin: auto;
-}
-
-/* Error message styling */
-.error {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-/* Table styling */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-/* Table headers and cells */
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Hover effects on table rows */
-tr:hover {
-    background-color: #f5f5f5;
-    cursor: pointer;
-}
-
-/* Arrow styling (customized to show expand/collapse arrow) */
-.expandable-arrow {
-    width: 10px;
-    height: 10px;
+/* Adjusting the form and dropdown styling */
+.form-control-sm {
+    width: 200px;
     display: inline-block;
-    margin-left: 10px;
-    border: solid 2px transparent;
-    border-top: 2px solid #333;
-    transition: transform 0.3s ease;
 }
-
-/* Arrow transforms when row is expanded */
-.expanded .expandable-arrow {
-    transform: rotate(180deg);
-}
-
-/* Expandable row styles */
-tr.expandable {
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/* Expanded row background */
-tr.expanded {
-    background-color: #f9f9f9; /* Lighter background when expanded */
-}
-
-/* Collapse table rows using Bootstrap classes */
-tr.collapse {
-    display: none;
-}
-
-/* Custom date picker styling */
-#custom-date-picker {
+.btn-primary {
     margin-top: 10px;
-    padding: 10px;
+}
+#custom-date-picker {
+    margin-top: 15px;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
-}
-
-#custom-date-picker input {
-    padding: 5px;
-    margin-right: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Improved Text Color for Readability */
-td, th {
-    color: #333;
-}
-
-th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-}
-
-/* Optional: Adding border to rows for better separation */
-tr {
-    border-bottom: 1px solid #ddd;
 }
