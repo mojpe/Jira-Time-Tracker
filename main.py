@@ -3,7 +3,9 @@ from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+
 import requests
 import datetime
 from requests.auth import HTTPBasicAuth
@@ -60,7 +62,7 @@ def get_time_logged(start_date, end_date):
     JQL_QUERY = f'worklogAuthor="{TARGET_USER}" AND worklogDate >= "{start_date}" AND worklogDate <= "{end_date}"'
     headers = {"Accept": "application/json"}
     auth = HTTPBasicAuth(USER_EMAIL, API_TOKEN)
-
+    print(f"JQL Query: {JQL_QUERY}")
     url = f"{JIRA_URL}/rest/api/3/search?jql={JQL_QUERY}&fields=worklog"    
     response = requests.get(url, headers=headers, auth=auth)
 
@@ -120,7 +122,13 @@ async def get_time(
     try:
         start_date, end_date = get_date_range(date_range, start_date, end_date)
         result = get_time_logged(start_date, end_date)
+        print(f"Time logged from {start_date} to {end_date}: {result}")
     except Exception as e:
         return templates.TemplateResponse("index.html", {"request": request, "error": str(e)})
     
     return templates.TemplateResponse("index.html", {"request": request, "result": result})
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/get_time")
