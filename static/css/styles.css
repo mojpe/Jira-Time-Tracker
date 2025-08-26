@@ -15,3 +15,227 @@
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+
+/* Table row styling */
+.issue-row.expandable {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+}
+
+.issue-row.expandable:hover {
+    background-color: #e9ecef;
+}
+
+.issue-row:not(.expandable) {
+    background-color: #fff;
+}
+
+/* Expand/collapse icon animation */
+.expand-icon {
+    transition: transform 0.2s ease-in-out;
+    color: #007bff;
+}
+
+.expand-icon.expanded {
+    transform: rotate(90deg);
+}
+
+/* Detail rows styling */
+.collapse td {
+    border-top: none;
+    background-color: #f1f3f4;
+    font-size: 0.9em;
+    padding-left: 2rem;
+}
+
+/* Summary Cards */
+.summary-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.summary-card .card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.summary-card .card-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Time-based color coding */
+.time-light {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.time-medium {
+    color: #ffc107;
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.time-heavy {
+    color: #fd7e14;
+    background-color: rgba(253, 126, 20, 0.1);
+}
+
+.time-very-heavy {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Enhanced table styling */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.table thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Progress bars */
+.progress {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Quick filter buttons */
+.btn-group .btn {
+    font-size: 0.85rem;
+}
+
+.btn-outline-primary.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Search input */
+#searchInput {
+    border-radius: 20px;
+    border: 1px solid #ced4da;
+}
+
+#searchInput:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .summary-card .card-title {
+        font-size: 1.4rem;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+    }
+    
+    #searchInput {
+        width: 100% !important;
+        margin-top: 0.5rem;
+        margin-left: 0 !important;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .progress {
+        height: 16px !important;
+    }
+    
+    .progress-bar {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-card .card-title {
+        font-size: 1.2rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    .badge {
+        font-size: 0.6rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.issue-row {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Enhanced detail row styling */
+.detail-row {
+    background-color: #f8f9fa;
+    border-left: 3px solid #e9ecef;
+}
+
+.detail-row:hover {
+    background-color: #e9ecef;
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #dee2e6;
+}

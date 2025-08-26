@@ -112,6 +112,41 @@ def format_time(minutes: float) -> str:
     remaining_minutes = minutes % 60
     return f"{hours}:{remaining_minutes:02d}"
 
+def format_time_human(minutes: float) -> str:
+    """Format minutes into human-readable format (e.g., '2h 30m')"""
+    minutes = round(minutes)
+    hours = minutes // 60
+    remaining_minutes = minutes % 60
+    
+    if hours > 0 and remaining_minutes > 0:
+        return f"{hours}h {remaining_minutes}m"
+    elif hours > 0:
+        return f"{hours}h"
+    else:
+        return f"{remaining_minutes}m"
+
+def get_time_class(minutes: float) -> str:
+    """Get CSS class based on time amount"""
+    if minutes < 30:
+        return "time-light"
+    elif minutes < 120:  # 2 hours
+        return "time-medium" 
+    elif minutes < 300:  # 5 hours
+        return "time-heavy"
+    else:
+        return "time-very-heavy"
+
+def get_progress_color(percentage: float) -> str:
+    """Get progress bar color based on percentage"""
+    if percentage < 10:
+        return "bg-info"
+    elif percentage < 25:
+        return "bg-success"
+    elif percentage < 50:
+        return "bg-warning"
+    else:
+        return "bg-danger"
+
 
 @lru_cache(maxsize=128)
 def get_time_logged(start_date: date, end_date: date) -> Dict[str, Any]:
@@ -182,36 +217,64 @@ def get_time_logged(start_date: date, end_date: date) -> Dict[str, Any]:
                     # Add to the issue's total time
                     grouped_issues[issue_key]["time"] += time_spent
                     
-                    # Append individual worklog entry
-                    grouped_issues[issue_key]["logs"].append(
-                        WorklogEntry(
-                            issue_log=issue_key,
-                            time_log=formatted_time
-                        ).__dict__
-                    )
+                    # Parse full datetime for more details
+                    full_datetime = datetime.strptime(worklog["started"], "%Y-%m-%dT%H:%M:%S.%f%z")
+                    time_of_day = full_datetime.strftime("%H:%M")
+                    date_logged = full_datetime.strftime("%Y-%m-%d")
+                    
+                    # Append individual worklog entry with enhanced data
+                    worklog_entry = {
+                        "issue_log": issue_key,
+                        "time_log": formatted_time,
+                        "time_formatted": format_time_human(time_spent / 60),
+                        "date_logged": date_logged,
+                        "time_of_day": time_of_day,
+                        "raw_minutes": time_spent / 60
+                    }
+                    grouped_issues[issue_key]["logs"].append(worklog_entry)
                     
             except (KeyError, ValueError) as e:
                 logger.warning(f"Skipping invalid worklog in {issue_key}: {str(e)}")
                 continue
 
-    # Build final result
+    # Build final result with enhanced data
     total_time_minutes = sum(issue["time"] for issue in grouped_issues.values()) / 60
+    total_logs = sum(len(issue["logs"]) for issue in grouped_issues.values())
+    average_time_per_issue = total_time_minutes / len(grouped_issues) if grouped_issues else 0
+    
     worklogs = []
     
     for issue_key, data in grouped_issues.items():
-        issue_worklog = IssueWorklog(
-            issue=issue_key,
-            time=format_time(data["time"] / 60),
-            logs=[WorklogEntry(**log) for log in data["logs"]]
-        )
-        worklogs.append(issue_worklog.__dict__)
+        issue_minutes = data["time"] / 60
+        percentage = (issue_minutes / total_time_minutes * 100) if total_time_minutes > 0 else 0
+        
+        issue_worklog = {
+            "issue": issue_key,
+            "time": format_time(issue_minutes),  # Keep original format for compatibility
+            "time_formatted": format_time_human(issue_minutes),
+            "time_class": get_time_class(issue_minutes),
+            "percentage": round(percentage, 1),
+            "progress_color": get_progress_color(percentage),
+            "logs": data["logs"],
+            "raw_minutes": issue_minutes
+        }
+        worklogs.append(issue_worklog)
+
+    # Sort by time spent (descending)
+    worklogs.sort(key=lambda x: x["raw_minutes"], reverse=True)
+    
+    # Get current timestamp
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     result = {
-        "total_time": format_time(total_time_minutes),
+        "total_time": format_time_human(total_time_minutes),
+        "total_logs": total_logs,
+        "average_time_per_issue": format_time_human(average_time_per_issue),
+        "last_updated": current_time,
         "worklogs": worklogs
     }
     
-    logger.info(f"Found {len(worklogs)} issues with time logged totaling {result['total_time']}")
+    logger.info(f"Found {len(worklogs)} issues with {total_logs} logs totaling {result['total_time']}")
     return result
 
 @app.get("/get_time", response_class=HTMLResponse)
