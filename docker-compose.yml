@@ -1,17 +1,11 @@
-version: '3.7'
-
 services:
-  app:
+  timewarrior:
     build: .
-    container_name: fastapi-jira-time-tracker
     ports:
       - "7005:7005"
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
     volumes:
-      - .:/app
-    networks:
-      - fastapi_network
-networks:
-  fastapi_network:
-    driver: bridge
+      - ./templates:/app/templates
+      - ./static:/app/static
+    restart: unless-stopped
