@@ -1,49 +1,46 @@
-# Jira Time Tracker Instructions
+# Time Warrior - JIRA Hours Calculator
 
-## Overview
-The Jira Time Tracker is a FastAPI application that allows users to track time logged on Jira issues. It fetches time logs based on specified date ranges and displays the results on a web interface.
+A FastAPI web application for calculating and tracking hours logged in JIRA.
 
-## Prerequisites
-- Docker and Docker Compose installed on your system.
-- Access to a Jira account with API permissions.
+## Setup
 
-## Setup Instructions
-
-1. **Clone the Repository**
+1. **Install dependencies:**
    ```bash
-   git clone <repository-url>
-   cd <repository-dir>
+   pip install -r requirements.txt
    ```
 
-2. **Configure the Application**
-   - Open the `config.yaml` file and update the following fields with your Jira credentials:
-     ```yaml
-     JIRA_URL: "https://your-jira-instance.atlassian.net/"
-     API_TOKEN: "your-jira-api-token"
-     USER_EMAIL: "your-email@example.com"
-     TARGET_USER: "target-user-email@example.com"
-     ```
+2. **Configure environment variables:**
+   Copy `env.example` to `.env` and update with your JIRA credentials:
+   ```bash
+   cp env.example .env
+   # Edit .env with your actual values
+   ```
 
-3. **Build and Run the Application**
-   - Use Docker Compose to build and run the application:
-     ```bash
-     docker-compose up --build
-     ```
+3. **Run the application:**
+   ```bash
+   uvicorn main:app --reload
+   ```
 
-4. **Access the Application**
-   - Open your web browser and navigate to `http://localhost:7005` to access the Jira Time Tracker interface.
+4. **Access the web interface:**
+   Open http://localhost:8000 in your browser.
 
-## Usage
+## Environment Variables
 
-- **Select Date Range**: Choose a predefined date range (e.g., today, this week, last month) or select "custom" to specify a custom date range.
-- **View Time Logs**: The application will display the total time logged and detailed worklogs for the selected date range.
+- `JIRA_URL`: Your JIRA instance URL (e.g., https://yourcompany.atlassian.net)
+- `JIRA_API_TOKEN`: Your JIRA API token
+- `JIRA_USER_EMAIL`: Your JIRA user email
+- `JIRA_TARGET_USER`: Email of the user whose time logs to fetch
 
-## Customization
+## Features
 
-- **Styling**: Modify `static/css/styles.css` to customize the application's appearance.
-- **JavaScript**: Update `static/js/script.js` to add or modify client-side functionality.
+- Query time logs by date range (today, yesterday, this week, last week, this month, last month, custom)
+- Group worklogs by JIRA issue
+- Display total time and individual log entries
+- Proper error handling and logging
+- Input validation with Pydantic models
+- Caching for improved performance
 
-## Troubleshooting
+## API Endpoints
 
-- If you encounter any errors, check the logs in the terminal where Docker Compose is running for more details.
-- Ensure your Jira API credentials are correct and have the necessary permissions.
+- `GET/POST /get_time`: Main interface for querying time logs
+- `GET /`: Redirects to `/get_time`

@@ -1,4 +1,0 @@
-JIRA_URL: "https://your-jira-instance.atlassian.net/"
-API_TOKEN: "your-jira-api-token"
-USER_EMAIL: "your-email@example.com"
-TARGET_USER: "target-user-email@example.com"
