@@ -15,70 +15,174 @@
     <div class="container border rounded shadow p-4 my-4">
         <h1 class="my-4 text-center">Jira Time Tracker</h1>
 
-        <form action="/get_time" method="post" class="mb-4 d-flex flex-column align-items-center">
-            <div class="form-group">
-                <label for="date-range">Select Time Range:</label>
-                <select id="date-range" name="date_range" onchange="toggleDatePicker()" class="form-control">
-                    <option value="today">Today</option>
-                    <option value="yesterday">Yesterday</option>
-                    <option value="this_week">This Week</option>
-                    <option value="last_week">Last Week</option>
-                    <option value="this_month">This Month</option>
-                    <option value="last_month">Last Month</option>
-                    <option value="custom">Custom Range</option>
-                </select>
-            </div>
+        <form action="/get_time" method="post" class="mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="date-range" class="form-label">Select Time Range:</label>
+                        <select id="date-range" name="date_range" onchange="toggleDatePicker()" class="form-select">
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this_week">This Week</option>
+                            <option value="last_week">Last Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
 
-            <div id="custom-date-picker" style="display: none;">
-                <div class="form-group">
-                    <label for="start_date">Start Date:</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="end_date">End Date:</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control">
+                    <div id="custom-date-picker" style="display: none;" class="mb-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="start_date" class="form-label">Start Date:</label>
+                                <input type="date" id="start_date" name="start_date" class="form-control">
+                            </div>
+                            <div class="col-6">
+                                <label for="end_date" class="form-label">End Date:</label>
+                                <input type="date" id="end_date" name="end_date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-clock-history"></i> Get Logged Time
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <button type="submit" class="btn btn-primary">Get Logged Time</button>
         </form>
 
         {% if result %}
-            <h2 class="text-center">Total Time Logged: {{ result.total_time }}</h2>
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card summary-card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title text-primary">{{ result.total_time }}</h3>
+                            <p class="card-text text-muted">Total Time</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card summary-card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title text-success">{{ result.worklogs|length }}</h3>
+                            <p class="card-text text-muted">Issues Worked</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card summary-card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title text-warning">{{ result.average_time_per_issue }}</h3>
+                            <p class="card-text text-muted">Avg per Issue</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card summary-card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title text-info">{{ result.total_logs }}</h3>
+                            <p class="card-text text-muted">Total Logs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {% if result.worklogs %}
-                <h3>Time Logged Per Issue:</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Issue Key</th>
-                            <th>Time Spent</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for log in result.worklogs %}
-                            {% if log.logs|length > 1 %}
-                                <tr class="issue-row expandable" data-bs-toggle="collapse" data-bs-target=".details-{{ log.issue }}" style="cursor: pointer;">
-                                    <td>
-                                        <i class="bi bi-chevron-right expand-icon me-2"></i>{{ log.issue }}
-                                    </td>
-                                    <td>{{ log.time }}</td>
-                                </tr>
-                                {% for worklog in log.logs %}
-                                    <tr class="collapse details-{{ log.issue }}">
-                                        <td><i class="bi bi-arrow-return-right"></i>{{ worklog.issue_log }}</td>
-                                        <td><i class="bi bi-arrow-return-right"></i>{{ worklog.time_log }}</td>
+                <!-- Quick Filters and Actions -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary" onclick="quickFilter('today')">Today</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="quickFilter('yesterday')">Yesterday</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="quickFilter('this_week')">This Week</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="quickFilter('last_week')">Last Week</button>
+                        </div>
+                        <input type="text" id="searchInput" class="form-control form-control-sm d-inline-block ms-3" style="width: 200px;" placeholder="Search issues...">
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-sm btn-success" onclick="exportToCSV()">
+                            <i class="bi bi-download"></i> Export CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">Time Logged Per Issue</h3>
+                    <small class="text-muted">Last updated: <span id="lastUpdated">{{ result.last_updated }}</span></small>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover" id="issuesTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 50%;">Issue Key</th>
+                                <th style="width: 25%;">Time Spent</th>
+                                <th style="width: 25%;">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in result.worklogs %}
+                                {% if log.logs|length > 1 %}
+                                    <tr class="issue-row expandable" data-bs-toggle="collapse" data-bs-target=".details-{{ log.issue }}" style="cursor: pointer;" data-issue="{{ log.issue|lower }}">
+                                        <td>
+                                            <i class="bi bi-chevron-right expand-icon me-2"></i>
+                                            <span class="fw-bold">{{ log.issue }}</span>
+                                            <span class="badge bg-secondary ms-2">{{ log.logs|length }} logs</span>
+                                        </td>
+                                        <td class="time-cell {{ log.time_class }}">
+                                            <strong>{{ log.time_formatted }}</strong>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar {{ log.progress_color }}" role="progressbar" 
+                                                     style="width: {{ log.percentage }}%;" 
+                                                     aria-valuenow="{{ log.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                    {{ log.percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr class="issue-row">
-                                    <td>{{ log.issue }}</td>
-                                    <td>{{ log.time }}</td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                    {% for worklog in log.logs %}
+                                        <tr class="collapse details-{{ log.issue }} detail-row">
+                                            <td>
+                                                <i class="bi bi-arrow-return-right me-2 text-muted"></i>
+                                                <span class="text-muted">{{ worklog.issue_log }}</span>
+                                                <small class="text-muted ms-2">{{ worklog.date_logged }}</small>
+                                            </td>
+                                            <td class="text-muted">{{ worklog.time_formatted }}</td>
+                                            <td class="text-muted">
+                                                <small>{{ worklog.time_of_day }}</small>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr class="issue-row" data-issue="{{ log.issue|lower }}">
+                                        <td>
+                                            <span class="fw-bold">{{ log.issue }}</span>
+                                        </td>
+                                        <td class="time-cell {{ log.time_class }}">
+                                            <strong>{{ log.time_formatted }}</strong>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar {{ log.progress_color }}" role="progressbar" 
+                                                     style="width: {{ log.percentage }}%;" 
+                                                     aria-valuenow="{{ log.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                    {{ log.percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <p class="text-center">No work logs found for today.</p>
             {% endif %}
