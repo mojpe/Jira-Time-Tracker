@@ -15,3 +15,35 @@
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+
+/* Table row styling */
+.issue-row.expandable {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+}
+
+.issue-row.expandable:hover {
+    background-color: #e9ecef;
+}
+
+.issue-row:not(.expandable) {
+    background-color: #fff;
+}
+
+/* Expand/collapse icon animation */
+.expand-icon {
+    transition: transform 0.2s ease-in-out;
+    color: #007bff;
+}
+
+.expand-icon.expanded {
+    transform: rotate(90deg);
+}
+
+/* Detail rows styling */
+.collapse td {
+    border-top: none;
+    background-color: #f1f3f4;
+    font-size: 0.9em;
+    padding-left: 2rem;
+}
